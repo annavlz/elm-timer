@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Time Tracker</title>
+  <script type="text/javascript" src="main.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="timer">
+    <h1>Timer</h1>
+    <div id="elm-timer"></div>
+  </div>
+  <div class="sessions">
+    <h1>Sessions</h1>
+    <div id="elm-sessions"></div>
+  </div>
+</body>
+
+<script type="text/javascript">
+  var timerDiv = document.getElementById('elm-timer')
+  Elm.embed(Elm.Timer, timerDiv)
+
+  var sessionsDiv = document.getElementById('elm-sessions')
+  Elm.embed(Elm.Sessions, sessionsDiv)
+</script>
+
+</html>
