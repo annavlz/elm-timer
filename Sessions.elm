@@ -22,6 +22,6 @@ view =
       ]
     ]
 
-main : Signal Element
+main : Html
 main =
-  Signal.map show (every second)
+  view

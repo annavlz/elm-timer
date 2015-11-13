@@ -4,13 +4,13 @@ module.exports = function(grunt) {
     elm: {
       compile: {
         files: {
-          "main.js": ["Timer.elm"]
+          "elm.js": ["Timer.elm"]
         }
       }
     },
     watch: {
       elm: {
-        files: ["Main.elm", "Timer.elm", "Sessions.elm", "Todo.elm"],
+        files: ["Timer.elm", "Sessions.elm"],
         tasks: ["elm"]
       }
     },
