@@ -20,10 +20,15 @@
 
 <script type="text/javascript">
   var timerDiv = document.getElementById('elm-timer')
-  Elm.embed(Elm.Timer, timerDiv)
-
+  var timer = Elm.embed(Elm.Timer, timerDiv)
+  var data = 0
   var sessionsDiv = document.getElementById('elm-sessions')
   Elm.embed(Elm.Sessions, sessionsDiv)
+
+  timer.ports.timerMessage.subscribe(function(state) {
+    console.log(state)
+  })
+
 </script>
 
 </html>

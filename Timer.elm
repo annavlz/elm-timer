@@ -11,14 +11,16 @@ import Html.Attributes exposing (..)
 type alias Model =
   { time: Int,
     counting: Bool,
-    button: String
+    button: String,
+    total: Int
   }
 
 initialModel : Model
 initialModel =
   { time = 0,
     counting = False,
-    button = "Start"
+    button = "Start",
+    total = 0
   }
 
 
@@ -36,17 +38,20 @@ update action model =
     Count ->
       if model.button == "Start"
         then { model | counting <- True, button <- "Stop" }
-        else { model | counting <- False, time <- 0, button <- "Start" }
+        else { model | counting <- False, total <- model.time, time <- 0, button <- "Start" }
+
 
 
 
 --VIEW
 
-view : Signal.Address Action -> Model -> Html
-view address model =
+
+view : Model -> Html
+view model =
   div [ class "timer" ]
     [ div [ class "counter" ] [ text (toString model.time) ]
-    , button [ onClick address Count ] [ text model.button ]
+    , button [ onClick inbox.address Count ] [ text model.button ]
+    , button [ onClick outbox.address model.total ] [ text "Send" ]
     ]
 
 --SIGNALS
@@ -66,10 +71,27 @@ combined =
     (actions)
     (Signal.map (\_ -> NoOp) (every second))
 
+
+outbox : Signal.Mailbox Int
+outbox =
+  Signal.mailbox 0
+
+
+port timerMessage : Signal Int
+port timerMessage =
+  outbox.signal
+
+
 model : Signal Model
 model =
   Signal.foldp update initialModel combined
 
+
 main : Signal Html
 main =
-  Signal.map (view inbox.address) model
+  Signal.map view model
+
+
+
+
+
