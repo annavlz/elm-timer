@@ -1,30 +1,30 @@
 module Timer where
 
-import Sessions
 import Time exposing (every, second)
 import Html exposing(..)
 import Html.Events exposing (onClick)
-
-
+import Html.Attributes exposing (..)
 
 
 --MODEL
 
 type alias Model =
   { time: Int,
-    counting: Bool
+    counting: Bool,
+    button: String
   }
 
 initialModel : Model
 initialModel =
   { time = 0,
-    counting = False
+    counting = False,
+    button = "Start"
   }
 
 
 --UPDATE
 
-type Action = Start | Stop | NoOp
+type Action = NoOp | Count
 
 update : Action -> Model -> Model
 update action model =
@@ -33,20 +33,20 @@ update action model =
       if model.counting
         then { model | time <- model.time + 1 }
         else { model | time <- 0 }
-    Stop ->
-      { model | counting <- False, time <- 0 }
-    Start ->
-      { model | counting <- True }
+    Count ->
+      if model.button == "Start"
+        then { model | counting <- True, button <- "Stop" }
+        else { model | counting <- False, time <- 0, button <- "Start" }
+
 
 
 --VIEW
 
 view : Signal.Address Action -> Model -> Html
 view address model =
-  div []
-    [ div [] [ text (toString model.time) ]
-    , button [ onClick address Start ] [ text "Start" ]
-    , button [ onClick address Stop ] [ text "Stop" ]
+  div [ class "timer" ]
+    [ div [ class "counter" ] [ text (toString model.time) ]
+    , button [ onClick address Count ] [ text model.button ]
     ]
 
 --SIGNALS
@@ -60,14 +60,15 @@ actions : Signal Action
 actions =
   inbox.signal
 
-updates =
+
+combined =
   Signal.merge
     (actions)
     (Signal.map (\_ -> NoOp) (every second))
 
 model : Signal Model
 model =
-  Signal.foldp update initialModel updates
+  Signal.foldp update initialModel combined
 
 main : Signal Html
 main =

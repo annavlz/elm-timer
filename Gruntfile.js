@@ -4,7 +4,7 @@ module.exports = function(grunt) {
     elm: {
       compile: {
         files: {
-          "elm.js": ["Timer.elm"]
+          "elm.js": ["Timer.elm", "Sessions.elm"]
         }
       }
     },
