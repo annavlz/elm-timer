@@ -1,6 +1,6 @@
 module Timer where
 
-import Time exposing (every, second)
+import Time exposing (every, second, Time)
 import Html exposing(..)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (..)
@@ -12,7 +12,18 @@ type alias Model =
   { time: Int,
     counting: Bool,
     button: String,
-    total: Int
+    sessions: List Session
+  }
+
+type alias Session =
+  { date: String,
+    time: Int
+  }
+
+initialSession : Session
+initialSession =
+  { date = "Today",
+    time = 20
   }
 
 initialModel : Model
@@ -20,7 +31,7 @@ initialModel =
   { time = 0,
     counting = False,
     button = "Start",
-    total = 0
+    sessions = [ initialSession ]
   }
 
 
@@ -38,21 +49,36 @@ update action model =
     Count ->
       if model.button == "Start"
         then { model | counting <- True, button <- "Stop" }
-        else { model | counting <- False, total <- model.time, time <- 0, button <- "Start" }
-
-
-
+        else { model | counting <- False,
+                       sessions <- ({date = "tomor", time = model.time}) :: model.sessions,
+                       time <- 0,
+                       button <- "Start" }
 
 --VIEW
+showSession : Session -> Html
+showSession session =
+  tr []
+    [ td []
+      [ text (toString session.date) ]
+    , td []
+      [ text (toString session.time) ]
+    ]
 
 
 view : Model -> Html
 view model =
-  div [ class "timer" ]
-    [ div [ class "counter" ] [ text (toString model.time) ]
-    , button [ onClick inbox.address Count ] [ text model.button ]
-    , button [ onClick outbox.address model.total ] [ text "Send" ]
-    ]
+  div [] [
+    div [ class "timer" ]
+      [ div [ class "counter" ] [ text (toString model.time) ]
+      , button [ onClick inbox.address Count ] [ text model.button ]
+      --, button [ onClick outbox.address model.total ] [ text "Send" ]
+      ],
+    div [ class "sessions" ]
+      [ h1 [] [ text "Sessions" ]
+      , div [] (List.map showSession (List.reverse model.sessions))
+      ]
+  ]
+
 
 --SIGNALS
 
