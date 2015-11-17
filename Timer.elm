@@ -4,7 +4,7 @@ import Time exposing (every, second, Time)
 import Html exposing(..)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (..)
-
+import Date exposing (fromTime, dayOfWeek, Day)
 
 --MODEL
 
@@ -16,22 +16,17 @@ type alias Model =
   }
 
 type alias Session =
-  { date: String,
+  { date: Day,
     time: Int
   }
 
-initialSession : Session
-initialSession =
-  { date = "Today",
-    time = 20
-  }
 
 initialModel : Model
 initialModel =
   { time = 0,
     counting = False,
     button = "Start",
-    sessions = [ initialSession ]
+    sessions = [ ]
   }
 
 
@@ -47,12 +42,21 @@ update action model =
         then { model | time <- model.time + 1 }
         else { model | time <- 0 }
     Count ->
-      if model.button == "Start"
-        then { model | counting <- True, button <- "Stop" }
-        else { model | counting <- False,
-                       sessions <- ({date = "tomor", time = model.time}) :: model.sessions,
-                       time <- 0,
-                       button <- "Start" }
+      let
+        getSession =
+          {date =
+            Time.millisecond
+              |> fromTime
+              |> dayOfWeek
+          , time = model.time
+          }
+      in
+        if model.button == "Start"
+          then { model | counting <- True, button <- "Stop" }
+          else { model | counting <- False,
+                         sessions <- getSession :: model.sessions,
+                         time <- 0,
+                         button <- "Start" }
 
 --VIEW
 showSession : Session -> Html
