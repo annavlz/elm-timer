@@ -1,10 +1,12 @@
 module Timer where
 
-import Time exposing (every, second, Time)
+import Time exposing (..)
 import Html exposing(..)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (..)
 import Date exposing (fromTime, dayOfWeek, Day)
+import Mouse
+
 
 --MODEL
 
@@ -61,10 +63,10 @@ update action model =
 --VIEW
 showSession : Session -> Html
 showSession session =
-  tr []
-    [ td []
+  tr [ class "sessions-table"]
+    [ td [ class "cell" ]
       [ text (toString session.date) ]
-    , td []
+    , td [ class "cell" ]
       [ text (toString session.time) ]
     ]
 
@@ -75,7 +77,6 @@ view model =
     div [ class "timer" ]
       [ div [ class "counter" ] [ text (toString model.time) ]
       , button [ onClick inbox.address Count ] [ text model.button ]
-      --, button [ onClick outbox.address model.total ] [ text "Send" ]
       ],
     div [ class "sessions" ]
       [ h1 [] [ text "Sessions" ]
@@ -100,6 +101,7 @@ combined =
   Signal.merge
     (actions)
     (Signal.map (\_ -> NoOp) (every second))
+
 
 
 outbox : Signal.Mailbox Int

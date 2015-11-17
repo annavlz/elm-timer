@@ -23,3 +23,14 @@ button {
   font-size: 30px
 }
 
+.sessions {
+  border: 1px solid #b8bdc5;
+  width: 500px;
+  text-align: center;
+}
+
+.cell {
+  border: 1px solid #b8bdc5;
+  width: 250px;
+  font-size: 20px;
+}
