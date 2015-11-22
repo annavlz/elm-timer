@@ -12,22 +12,11 @@
 
     <div id="elm-timer"></div>
 
-<!--   <div class="sessions">
-    <h1>Sessions</h1>
-    <div id="elm-sessions"></div>
-  </div> -->
 </body>
 
 <script type="text/javascript">
   var timerDiv = document.getElementById('elm-timer')
   var timer = Elm.embed(Elm.Timer, timerDiv)
-  var data = 0
-  // var sessionsDiv = document.getElementById('elm-sessions')
-  // Elm.embed(Elm.Sessions, sessionsDiv)
-
-  timer.ports.timerMessage.subscribe(function(state) {
-    console.log(state)
-  })
 
 </script>
 

@@ -4,8 +4,7 @@ import Time exposing (..)
 import Html exposing(..)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (..)
-import Date exposing (fromTime, dayOfWeek, Day)
-import Mouse
+import Timestamp exposing (makeDate)
 
 
 --MODEL
@@ -18,7 +17,7 @@ type alias Model =
   }
 
 type alias Session =
-  { date: Day,
+  { date: String,
     time: Int
   }
 
@@ -36,8 +35,8 @@ initialModel =
 
 type Action = NoOp | Count
 
-update : Action -> Model -> Model
-update action model =
+update : (Time, Action) -> Model -> Model
+update (timeS, action) model =
   case action of
     NoOp ->
       if model.counting
@@ -47,9 +46,7 @@ update action model =
       let
         getSession =
           {date =
-            Time.millisecond
-              |> fromTime
-              |> dayOfWeek
+            makeDate timeS
           , time = model.time
           }
       in
@@ -103,7 +100,6 @@ combined =
     (Signal.map (\_ -> NoOp) (every second))
 
 
-
 outbox : Signal.Mailbox Int
 outbox =
   Signal.mailbox 0
@@ -116,7 +112,7 @@ port timerMessage =
 
 model : Signal Model
 model =
-  Signal.foldp update initialModel combined
+  Signal.foldp update initialModel (timestamp combined)
 
 
 main : Signal Html
