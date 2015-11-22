@@ -1,10 +1,11 @@
 module Timer where
 
+import Timestamp exposing (makeDate)
+
 import Time exposing (..)
 import Html exposing(..)
 import Html.Events exposing (onClick)
 import Html.Attributes exposing (..)
-import Timestamp exposing (makeDate)
 
 
 --MODEL
@@ -15,6 +16,7 @@ type alias Model =
     button: String,
     sessions: List Session
   }
+
 
 type alias Session =
   { date: String,
@@ -36,7 +38,7 @@ initialModel =
 type Action = NoOp | Count
 
 update : (Time, Action) -> Model -> Model
-update (timeS, action) model =
+update (timeStop, action) model =
   case action of
     NoOp ->
       if model.counting
@@ -45,19 +47,20 @@ update (timeS, action) model =
     Count ->
       let
         getSession =
-          {date =
-            makeDate timeS
-          , time = model.time
-          }
+          { date = makeDate timeStop
+          , time = model.time }
       in
         if model.button == "Start"
-          then { model | counting <- True, button <- "Stop" }
-          else { model | counting <- False,
-                         sessions <- getSession :: model.sessions,
-                         time <- 0,
-                         button <- "Start" }
+          then { model | counting <- True
+                       , button <- "Stop" }
+          else { model | counting <- False
+                       , sessions <- getSession :: model.sessions
+                       , time <- 0
+                       , button <- "Start" }
+
 
 --VIEW
+
 showSession : Session -> Html
 showSession session =
   tr [ class "sessions-table"]
@@ -74,8 +77,8 @@ view model =
     div [ class "timer" ]
       [ div [ class "counter" ] [ text (toString model.time) ]
       , button [ onClick inbox.address Count ] [ text model.button ]
-      ],
-    div [ class "sessions" ]
+      ]
+  , div [ class "sessions" ]
       [ h1 [] [ text "Sessions" ]
       , div [] (List.map showSession (List.reverse model.sessions))
       ]
@@ -100,15 +103,7 @@ combined =
     (Signal.map (\_ -> NoOp) (every second))
 
 
-outbox : Signal.Mailbox Int
-outbox =
-  Signal.mailbox 0
-
-
-port timerMessage : Signal Int
-port timerMessage =
-  outbox.signal
-
+--WIRING
 
 model : Signal Model
 model =
