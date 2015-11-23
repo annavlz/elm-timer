@@ -12,7 +12,11 @@ sessionTimes sessionsList =
 
 totalTime : List Session -> String
 totalTime sessionsList =
-  List.foldr (+) 0 (List.map (\session -> session.time) sessionsList) |> timeRead
+  let
+    getSessionTime =
+      List.map (\session -> session.time) sessionsList
+  in
+    List.foldr (+) 0 getSessionTime |> timeRead
 
 
 timeRead : Int -> String
