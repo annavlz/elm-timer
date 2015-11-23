@@ -75,6 +75,14 @@ showSession session =
       [ text (toString session.time) ]
     ]
 
+sessionTimes : List Session -> String
+sessionTimes sessionsList =
+  List.length sessionsList |> toString
+
+
+totalTime : List Session -> String
+totalTime sessionsList =
+  List.foldr (+) 0 (List.map (\session -> session.time) sessionsList) |> toString
 
 view : Model -> Html
 view model =
@@ -86,7 +94,16 @@ view model =
   , div [ class "sessions" ]
       [ h1 [] [ text "Sessions" ]
       , button [ class "reset-button", onClick inbox.address Reset ] [ text "Reset" ]
-      , div [] (List.map showSession (List.reverse model.sessions))
+      , div []
+        [ tr [ class "sessions-table"]
+          [ td [ class "cell" ]
+            [ text ((sessionTimes model.sessions) ++ " times") ]
+          , td [ class "cell" ]
+            [ text ((totalTime model.sessions) ++ " in total") ]
+          ]
+        ]
+      , div []
+        (List.map showSession (List.reverse model.sessions))
       ]
   ]
 
@@ -117,6 +134,7 @@ port incoming : Maybe Model
 port outgoing : Signal Model
 port outgoing =
   model
+
 
 --WIRING
 
