@@ -38,7 +38,7 @@ initialModel =
 
 --UPDATE
 
-type Action = NoOp | Count
+type Action = NoOp | Count | Reset
 
 update : (Time, Action) -> Model -> Model
 update (timeStop, action) model =
@@ -60,6 +60,8 @@ update (timeStop, action) model =
                        , sessions <- getSession :: model.sessions
                        , time <- 0
                        , button <- "Start" }
+    Reset ->
+      { model | sessions <- [ ] }
 
 
 --VIEW
@@ -79,10 +81,11 @@ view model =
   div [] [
     div [ class "timer" ]
       [ div [ class "counter" ] [ text (toString model.time) ]
-      , button [ onClick inbox.address Count ] [ text model.button ]
+      , button [ class "start-button", onClick inbox.address Count ] [ text model.button ]
       ]
   , div [ class "sessions" ]
       [ h1 [] [ text "Sessions" ]
+      , button [ class "reset-button", onClick inbox.address Reset ] [ text "Reset" ]
       , div [] (List.map showSession (List.reverse model.sessions))
       ]
   ]

@@ -15,12 +15,16 @@
 
 }
 
-button {
+.start-button {
   width: 80%;
   height: 50px;
   margin: 10%;
   border-radius: 10px;
   font-size: 30px
+}
+
+.reset-button {
+  margin-bottom: 15px
 }
 
 .sessions {
