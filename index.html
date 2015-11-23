@@ -15,8 +15,15 @@
 </body>
 
 <script type="text/javascript">
+  var timerModel = localStorage.getItem('timer-sessions')
+  var startingModel = timerModel ? JSON.parse(timerModel) : null
+
   var timerDiv = document.getElementById('elm-timer')
-  var timer = Elm.embed(Elm.Timer, timerDiv)
+  var timer = Elm.embed(Elm.Timer, timerDiv, {incoming: startingModel})
+
+  timer.ports.outgoing.subscribe(function(model) {
+    localStorage.setItem('timer-sessions', JSON.stringify(model))
+  })
 
 </script>
 

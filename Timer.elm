@@ -26,12 +26,15 @@ type alias Session =
 
 initialModel : Model
 initialModel =
-  { time = 0,
-    counting = False,
-    button = "Start",
-    sessions = [ ]
-  }
-
+  let
+    emptyModel =
+      { time = 0,
+        counting = False,
+        button = "Start",
+        sessions = [ ]
+      }
+  in
+    Maybe.withDefault emptyModel incoming
 
 --UPDATE
 
@@ -102,6 +105,15 @@ combined =
     (actions)
     (Signal.map (\_ -> NoOp) (every second))
 
+
+--PORTS
+
+port incoming : Maybe Model
+
+
+port outgoing : Signal Model
+port outgoing =
+  model
 
 --WIRING
 
