@@ -70,7 +70,7 @@ update (timeStop, action) model =
 
 showSession : Session -> Html
 showSession session =
-  tr [ class "sessions-table"]
+  tr [ ]
     [ td [ class "cell" ]
       [ text (toString session.date) ]
     , td [ class "cell" ]

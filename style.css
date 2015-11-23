@@ -3,7 +3,8 @@
   margin-left: 50px;
   border: 1px solid #b8bdc5;
   border-radius: 10px;
-  background-color: #d4dce7
+  background-color: #d4dce7;
+  margin-bottom: 20px
 
 }
 
@@ -31,6 +32,10 @@
   border: 1px solid #b8bdc5;
   width: 500px;
   text-align: center;
+}
+
+.sessions-table {
+  background-color: #d4c9c9
 }
 
 .cell {
