@@ -23,4 +23,6 @@ timeRead time =
     sec = time `rem` 60 |> toString
 
   in
-    hour ++ " h " ++ min ++ " min " ++ sec ++ " sec"
+    if | time < 60   -> sec ++ " sec"
+       | time < 3600 -> min ++ " min " ++ sec ++ " sec"
+       | otherwise   -> hour ++ " h " ++ min ++ " min " ++ sec ++ " sec"
