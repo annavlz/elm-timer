@@ -1,6 +1,7 @@
 module Timer where
 
 import Timestamp exposing (makeDate)
+import Transformer exposing (sessionTimes, totalTime)
 
 import Time exposing (..)
 import Html exposing(..)
@@ -35,6 +36,7 @@ initialModel =
       }
   in
     Maybe.withDefault emptyModel incoming
+
 
 --UPDATE
 
@@ -75,14 +77,6 @@ showSession session =
       [ text (toString session.time) ]
     ]
 
-sessionTimes : List Session -> String
-sessionTimes sessionsList =
-  List.length sessionsList |> toString
-
-
-totalTime : List Session -> String
-totalTime sessionsList =
-  List.foldr (+) 0 (List.map (\session -> session.time) sessionsList) |> toString
 
 view : Model -> Html
 view model =
