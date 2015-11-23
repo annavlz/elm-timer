@@ -1,7 +1,7 @@
 module Timer where
 
 import Timestamp exposing (makeDate)
-import Transformer exposing (sessionTimes, totalTime)
+import Transformer exposing (sessionTimes, totalTime, timeRead)
 
 import Time exposing (..)
 import Html exposing(..)
@@ -74,7 +74,7 @@ showSession session =
     [ td [ class "cell" ]
       [ text (toString session.date) ]
     , td [ class "cell" ]
-      [ text (toString session.time) ]
+      [ text (timeRead session.time) ]
     ]
 
 
@@ -82,7 +82,7 @@ view : Model -> Html
 view model =
   div [] [
     div [ class "timer" ]
-      [ div [ class "counter" ] [ text (toString model.time) ]
+      [ div [ class "counter" ] [ text (timeRead model.time) ]
       , button [ class "start-button", onClick inbox.address Count ] [ text model.button ]
       ]
   , div [ class "sessions" ]
