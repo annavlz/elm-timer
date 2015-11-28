@@ -1,7 +1,7 @@
 module Timer where
 
-import Timestamp exposing (makeDate)
-import Transformer exposing (sessionTimes, totalTime, timeRead)
+import Timestamp exposing (..)
+import ViewHtml exposing (..)
 
 import Time exposing (..)
 import Html exposing(..)
@@ -44,7 +44,7 @@ initialModel =
 
 --UPDATE
 
-type Action = NoOp | Count | Reset
+type Action = NoOp | Count | Reset | Reading | Exercise | Walking
 
 update : (Time, Action) -> Model -> Model
 update (timeStop, action) model =
@@ -70,26 +70,27 @@ update (timeStop, action) model =
                        , button <- "Start" }
     Reset ->
       { model | sessions <- [ ] }
+    Reading ->
+      { model | currentCategory <- "Reading" }
+    Exercise ->
+      { model | currentCategory <- "Exercise" }
+    Walking ->
+      { model | currentCategory <- "Walking" }
 
 
 --VIEW
+filterSession : Model -> List Session
+filterSession model =
+  List.filter (\session -> session.category == model.currentCategory) model.sessions
 
-showSession : Session -> Html
-showSession session =
-  tr [ ]
-    [ td [ class "cell" ]
-      [ text (toString session.date) ]
-    , td [ class "cell" ]
-      [ text (timeRead session.time) ]
-    ]
 
 
 dd : Html
 dd =
   dropDown (Signal.message catInbox.address)
-    [ ("Reading", "Reading")
-    , ("Exercise", "Exercise")
-    , ("Walking", "Walking")
+    [ ("Reading", Reading)
+    , ("Exercise", Exercise)
+    , ("Walking", Walking)
     ] |> fromElement
 
 
@@ -113,7 +114,10 @@ view model =
           ]
         ]
       , div []
-        (List.map showSession (List.reverse model.sessions))
+        (filterSession model
+          |> List.reverse
+          |> List.map showSession
+        )
       ]
   ]
 
@@ -124,11 +128,11 @@ inbox : Signal.Mailbox Action
 inbox =
   Signal.mailbox NoOp
 
-catInbox : Signal.Mailbox String
+catInbox : Signal.Mailbox Action
 catInbox =
-  Signal.mailbox "Reading"
+  Signal.mailbox Reading
 
-categories : Signal String
+categories : Signal Action
 categories =
   catInbox.signal
 
@@ -138,10 +142,11 @@ actions =
 
 
 combined =
-  Signal.merge
-    (actions)
-    (Signal.map (\_ -> NoOp) (every second))
-
+  Signal.mergeMany
+    [ (actions)
+    , (Signal.map (\_ -> NoOp) (every second))
+    , (categories)
+    ]
 
 
 --PORTS
