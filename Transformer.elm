@@ -2,7 +2,8 @@ module Transformer (sessionTimes, totalTime, timeRead) where
 
 type alias Session =
   { date: String,
-    time: Int
+    time: Int,
+    category: String
   }
 
 sessionTimes : List Session -> String

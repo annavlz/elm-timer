@@ -5,8 +5,9 @@ import Transformer exposing (sessionTimes, totalTime, timeRead)
 
 import Time exposing (..)
 import Html exposing(..)
-import Html.Events exposing (onClick)
+import Html.Events exposing (..)
 import Html.Attributes exposing (..)
+import Graphics.Input exposing (dropDown)
 
 
 --MODEL
@@ -15,13 +16,15 @@ type alias Model =
   { time: Int,
     counting: Bool,
     button: String,
-    sessions: List Session
+    sessions: List Session,
+    currentCategory: String
   }
 
 
 type alias Session =
   { date: String,
-    time: Int
+    time: Int,
+    category: String
   }
 
 
@@ -32,7 +35,8 @@ initialModel =
       { time = 0,
         counting = False,
         button = "Start",
-        sessions = [ ]
+        sessions = [ ],
+        currentCategory = "Reading"
       }
   in
     Maybe.withDefault emptyModel incoming
@@ -53,7 +57,9 @@ update (timeStop, action) model =
       let
         getSession =
           { date = makeDate timeStop
-          , time = model.time }
+          , time = model.time
+          , category = model.currentCategory
+          }
       in
         if model.button == "Start"
           then { model | counting <- True
@@ -78,6 +84,15 @@ showSession session =
     ]
 
 
+dd : Html
+dd =
+  dropDown (Signal.message catInbox.address)
+    [ ("Reading", "Reading")
+    , ("Exercise", "Exercise")
+    , ("Walking", "Walking")
+    ] |> fromElement
+
+
 view : Model -> Html
 view model =
   div [] [
@@ -87,6 +102,7 @@ view model =
       ]
   , div [ class "sessions" ]
       [ h1 [] [ text "Sessions" ]
+      , dd
       , button [ class "reset-button", onClick inbox.address Reset ] [ text "Reset" ]
       , div []
         [ tr [ class "sessions-table"]
@@ -108,6 +124,13 @@ inbox : Signal.Mailbox Action
 inbox =
   Signal.mailbox NoOp
 
+catInbox : Signal.Mailbox String
+catInbox =
+  Signal.mailbox "Reading"
+
+categories : Signal String
+categories =
+  catInbox.signal
 
 actions : Signal Action
 actions =
@@ -118,6 +141,7 @@ combined =
   Signal.merge
     (actions)
     (Signal.map (\_ -> NoOp) (every second))
+
 
 
 --PORTS
