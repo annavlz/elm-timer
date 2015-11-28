@@ -46,6 +46,24 @@ initialModel =
 
 type Action = NoOp | Count | Reset | Reading | Exercise | Walking
 
+
+createSession : Time -> String -> Model -> Model
+createSession timeStop catString model =
+  let
+    getSession =
+      { date = makeDate timeStop
+      , time = model.time
+      , category = model.currentCategory
+      }
+  in
+    { model | counting <- False
+            , sessions <- getSession :: model.sessions
+            , time <- 0
+            , button <- "Start"
+            , currentCategory <- catString }
+
+
+
 update : (Time, Action) -> Model -> Model
 update (timeStop, action) model =
   case action of
@@ -54,28 +72,24 @@ update (timeStop, action) model =
         then { model | time <- model.time + 1 }
         else { model | time <- 0 }
     Count ->
-      let
-        getSession =
-          { date = makeDate timeStop
-          , time = model.time
-          , category = model.currentCategory
-          }
-      in
-        if model.button == "Start"
-          then { model | counting <- True
-                       , button <- "Stop" }
-          else { model | counting <- False
-                       , sessions <- getSession :: model.sessions
-                       , time <- 0
-                       , button <- "Start" }
+      if model.button == "Start"
+        then { model | counting <- True
+                     , button <- "Stop" }
+        else createSession timeStop model.currentCategory model
     Reset ->
       { model | sessions <- (filterSessionsRemove model) }
     Reading ->
-      { model | currentCategory <- "Reading" }
+      if model.button == "Start"
+        then { model | currentCategory <- "Reading"}
+        else createSession timeStop "Reading" model
     Exercise ->
-      { model | currentCategory <- "Exercise" }
+      if model.button == "Start"
+        then { model | currentCategory <- "Exercise"}
+        else createSession timeStop "Exercise" model
     Walking ->
-      { model | currentCategory <- "Walking" }
+      if model.button == "Start"
+        then { model | currentCategory <- "Walking"}
+        else createSession timeStop "Walking" model
 
 
 --VIEW
