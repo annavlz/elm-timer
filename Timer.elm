@@ -69,7 +69,7 @@ update (timeStop, action) model =
                        , time <- 0
                        , button <- "Start" }
     Reset ->
-      { model | sessions <- [ ] }
+      { model | sessions <- (filterSessionsRemove model) }
     Reading ->
       { model | currentCategory <- "Reading" }
     Exercise ->
@@ -83,6 +83,10 @@ filterSessions : Model -> List Session
 filterSessions model =
   List.filter (\session -> session.category == model.currentCategory) model.sessions
 
+
+filterSessionsRemove : Model -> List Session
+filterSessionsRemove model =
+  List.filter (\session -> session.category /= model.currentCategory) model.sessions
 
 
 dd : Html
