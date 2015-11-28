@@ -79,8 +79,8 @@ update (timeStop, action) model =
 
 
 --VIEW
-filterSession : Model -> List Session
-filterSession model =
+filterSessions : Model -> List Session
+filterSessions model =
   List.filter (\session -> session.category == model.currentCategory) model.sessions
 
 
@@ -108,13 +108,13 @@ view model =
       , div []
         [ tr [ class "sessions-table"]
           [ td [ class "cell" ]
-            [ text ((sessionTimes model.sessions) ++ " times") ]
+            [ text ((sessionTimes (filterSessions model)) ++ " times") ]
           , td [ class "cell" ]
-            [ text ((totalTime model.sessions) ++ " in total") ]
+            [ text ((totalTime (filterSessions model)) ++ " in total") ]
           ]
         ]
       , div []
-        (filterSession model
+        (filterSessions model
           |> List.reverse
           |> List.map showSession
         )
