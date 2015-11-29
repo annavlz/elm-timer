@@ -44,7 +44,7 @@ initialModel =
 
 --UPDATE
 
-type Action = NoOp | Count | Reset | Reading | Exercise | Walking
+type Action = NoOp | Count | Reset | ChangeCategory String
 
 
 createSession : Time -> String -> Model -> Model
@@ -71,25 +71,21 @@ update (timeStop, action) model =
       if model.counting
         then { model | time <- model.time + 1 }
         else { model | time <- 0 }
+
     Count ->
       if model.button == "Start"
         then { model | counting <- True
                      , button <- "Stop" }
         else createSession timeStop model.currentCategory model
+
     Reset ->
       { model | sessions <- (filterSessionsRemove model) }
-    Reading ->
+
+    ChangeCategory catString ->
       if model.button == "Start"
-        then { model | currentCategory <- "Reading"}
-        else createSession timeStop "Reading" model
-    Exercise ->
-      if model.button == "Start"
-        then { model | currentCategory <- "Exercise"}
-        else createSession timeStop "Exercise" model
-    Walking ->
-      if model.button == "Start"
-        then { model | currentCategory <- "Walking"}
-        else createSession timeStop "Walking" model
+        then { model | currentCategory <- catString }
+        else createSession timeStop catString model
+
 
 
 --VIEW
@@ -106,9 +102,9 @@ filterSessionsRemove model =
 dd : Html
 dd =
   dropDown (Signal.message catInbox.address)
-    [ ("Reading", Reading)
-    , ("Exercise", Exercise)
-    , ("Walking", Walking)
+    [ ("Reading", (ChangeCategory "Reading"))
+    , ("Exercise", (ChangeCategory "Exercise"))
+    , ("Walking", (ChangeCategory "Walking"))
     ] |> fromElement
 
 
@@ -148,7 +144,7 @@ inbox =
 
 catInbox : Signal.Mailbox Action
 catInbox =
-  Signal.mailbox Reading
+  Signal.mailbox (ChangeCategory "Reading")
 
 categories : Signal Action
 categories =
