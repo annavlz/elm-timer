@@ -17,7 +17,8 @@ type alias Model =
     counting: Bool,
     button: String,
     sessions: List Session,
-    currentCategory: String
+    currentCategory: String,
+    catList: List String
   }
 
 
@@ -36,7 +37,8 @@ initialModel =
         counting = False,
         button = "Start",
         sessions = [ ],
-        currentCategory = "Reading"
+        currentCategory = "Reading",
+        catList = ["Reading", "Exercise", "Walking"]
       }
   in
     Maybe.withDefault emptyModel incoming
@@ -99,13 +101,14 @@ filterSessionsRemove model =
   List.filter (\session -> session.category /= model.currentCategory) model.sessions
 
 
-dd : Html
-dd =
-  dropDown (Signal.message catInbox.address)
-    [ ("Reading", (ChangeCategory "Reading"))
-    , ("Exercise", (ChangeCategory "Exercise"))
-    , ("Walking", (ChangeCategory "Walking"))
-    ] |> fromElement
+dd : Model -> Html
+dd model =
+  let
+    getCatList category =
+      (category, ChangeCategory category)
+  in
+    dropDown (Signal.message catInbox.address)
+      (List.map getCatList model.catList) |> fromElement
 
 
 view : Model -> Html
@@ -117,7 +120,7 @@ view model =
       ]
   , div [ class "sessions" ]
       [ h1 [] [ text "Sessions" ]
-      , dd
+      , dd model
       , button [ class "reset-button", onClick inbox.address Reset ] [ text "Reset" ]
       , div []
         [ tr [ class "sessions-table"]
