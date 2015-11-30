@@ -58,11 +58,11 @@ createSession timeStop catString model =
       , category = model.currentCategory
       }
   in
-    { model | counting <- False
-            , sessions <- getSession :: model.sessions
-            , time <- 0
-            , button <- "Start"
-            , currentCategory <- catString }
+    { model | counting = False
+            , sessions = getSession :: model.sessions
+            , time = 0
+            , button = "Start"
+            , currentCategory = catString }
 
 
 
@@ -71,21 +71,21 @@ update (timeStop, action) model =
   case action of
     NoOp ->
       if model.counting
-        then { model | time <- model.time + 1 }
-        else { model | time <- 0 }
+        then { model | time = model.time + 1 }
+        else { model | time = 0 }
 
     Count ->
       if model.button == "Start"
-        then { model | counting <- True
-                     , button <- "Stop" }
+        then { model | counting = True
+                     , button = "Stop" }
         else createSession timeStop model.currentCategory model
 
     Reset ->
-      { model | sessions <- (filterSessionsRemove model) }
+      { model | sessions = (filterSessionsRemove model) }
 
     ChangeCategory catString ->
       if model.button == "Start"
-        then { model | currentCategory <- catString }
+        then { model | currentCategory = catString }
         else createSession timeStop catString model
 
 

@@ -32,9 +32,9 @@ timeRead time =
     sec = time `rem` 60 |> toString
 
   in
-    if | time < 60   -> sec ++ " sec"
-       | time < 3600 -> min ++ " min " ++ sec ++ " sec"
-       | otherwise   -> hour ++ " h " ++ min ++ " min " ++ sec ++ " sec"
+    if time < 60  then sec ++ " sec"
+    else if time < 3600 then min ++ " min " ++ sec ++ " sec"
+    else hour ++ " h " ++ min ++ " min " ++ sec ++ " sec"
 
 
 makeDate : Time -> String
