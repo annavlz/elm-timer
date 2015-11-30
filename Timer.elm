@@ -91,6 +91,7 @@ update (timeStop, action) model =
 
 
 --VIEW
+
 filterSessions : Model -> List Session
 filterSessions model =
   List.filter (\session -> session.category == model.currentCategory) model.sessions
@@ -107,9 +108,12 @@ dd model =
     getCatList category =
       (category, ChangeCategory category)
   in
-    dropDown (Signal.message catInbox.address)
-      (List.map getCatList model.catList) |> fromElement
-
+    div []
+      [ input [ ] []
+      --, on "input" (ChangeCategory toString(targetValue)) (Signal.message catInbox.address)] [ ]
+      , dropDown (Signal.message inbox.address)
+              (List.map getCatList model.catList) |> fromElement
+      ]
 
 view : Model -> Html
 view model =
@@ -145,13 +149,6 @@ inbox : Signal.Mailbox Action
 inbox =
   Signal.mailbox NoOp
 
-catInbox : Signal.Mailbox Action
-catInbox =
-  Signal.mailbox (ChangeCategory "Reading")
-
-categories : Signal Action
-categories =
-  catInbox.signal
 
 actions : Signal Action
 actions =
@@ -162,7 +159,6 @@ combined =
   Signal.mergeMany
     [ (actions)
     , (Signal.map (\_ -> NoOp) (every second))
-    , (categories)
     ]
 
 
