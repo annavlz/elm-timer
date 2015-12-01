@@ -12,8 +12,6 @@ type alias Session =
   }
 
 
-
-
 showSession : Session -> Html
 showSession session =
   tr [ ]
