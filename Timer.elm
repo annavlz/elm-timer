@@ -109,10 +109,10 @@ dd model =
       (category, ChangeCategory category)
   in
     div []
-      [ input [ ] []
-      --, on "input" (ChangeCategory toString(targetValue)) (Signal.message catInbox.address)] [ ]
-      , dropDown (Signal.message inbox.address)
-              (List.map getCatList model.catList) |> fromElement
+      [
+        dropDown (Signal.message inbox.address)
+                 (List.map getCatList model.catList)
+                 |> fromElement
       ]
 
 view : Model -> Html
