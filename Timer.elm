@@ -8,6 +8,7 @@ import Html.Attributes exposing (..)
 import Date exposing (fromTime, year, month, day)
 import Time exposing (..)
 import String
+import Styles
 
 
 
@@ -47,9 +48,9 @@ makeDate time =
 
 timerView : Model -> Signal.Address Types.Action -> Action -> Html
 timerView model address action =
-  div [ class "timer" ]
-  [ div [ class "counter" ] [ text (timeRead model.time) ]
-  , button [ class "start-button", onClick address action ] [ text model.button ]
+  div [ Styles.timer ]
+  [ div [ Styles.counter ] [ text (timeRead model.time) ]
+  , button [ Styles.startButton, onClick address action ] [ text model.button ]
   ]
 
 

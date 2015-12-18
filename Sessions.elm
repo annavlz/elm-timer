@@ -2,6 +2,7 @@ module Sessions (..) where
 
 import Types exposing (..)
 import Timer exposing (..)
+import Styles
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -27,11 +28,11 @@ totalTime sessionsList =
 showSession : Session -> Html
 showSession session =
   tr [ ]
-    [ td [ class "cell" ]
+    [ td [ Styles.cell ]
       [ text (toString session.date) ]
-    , td [ class "cell" ]
+    , td [ Styles.cell  ]
       [ text (timeRead session.time) ]
-    , td [ class "cell" ]
+    , td [ Styles.cell  ]
       [ text session.category ]
     ]
 
@@ -77,15 +78,15 @@ dDown model address action =
       ]
 
 sessionsView model address action1 action2 =
-  div [ class "sessions" ]
+  div [ Styles.sessions ]
     [ h1 [] [ text "Sessions" ]
     , dDown model address action1
-    , button [ class "reset-button", onClick address action2 ] [ text "Reset" ]
+    , button [ Styles.resetButton, onClick address action2 ] [ text "Reset" ]
     , div []
-      [ tr [ class "sessions-table"]
-        [ td [ class "cell" ]
+      [ tr [ Styles.sessionsTable ]
+        [ td [ Styles.cell  ]
           [ text ((sessionTimes (filterSessions model)) ++ " times") ]
-        , td [ class "cell" ]
+        , td [ Styles.cell  ]
           [ text ((totalTime (filterSessions model)) ++ " in total") ]
         ]
       ]
