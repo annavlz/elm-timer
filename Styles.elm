@@ -73,3 +73,8 @@ cell =
   , ("padding","5px 10px")
   ]
 
+float =
+  style
+  [ ("float","left")
+  , ("width","50%")
+  ]

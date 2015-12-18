@@ -3,6 +3,8 @@ module Main where
 import Timer exposing (..)
 import Sessions exposing (..)
 import Types exposing (..)
+import Stats exposing (..)
+import Styles
 
 import Time exposing (..)
 import Html exposing(..)
@@ -57,10 +59,17 @@ update (timeStop, action) model =
 
 view : Model -> Html
 view model =
-  div [] [
-    timerView model inbox.address Count
-  , sessionsView model inbox.address ChangeCategory Reset
-  ]
+  div []
+    [ div [ Styles.float ] [
+        timerView model inbox.address Count
+      , sessionsView model inbox.address ChangeCategory Reset
+      ]
+    , div [ Styles.float ] [
+      statsView model
+      ]
+    ]
+
+
 
 
 --SIGNALS
