@@ -7,20 +7,20 @@ import Html.Events exposing (..)
 import Html.Attributes exposing (..)
 import Date exposing (fromTime, year, month, day)
 import Time exposing (..)
+import String
 
 
 
 timeRead : Int -> String
 timeRead time =
   let
-    hour = time // 3600 |> toString
-    min = time `rem` 3600 // 60 |> toString
-    sec = time `rem` 60 |> toString
+    hour = time // 3600
+    min = time `rem` 3600 // 60
+    sec = time `rem` 60
 
+    print digits = (if digits < 10 then "0" else "") ++ toString digits
   in
-    if time < 60  then sec ++ " sec"
-    else if time < 3600 then min ++ " min " ++ sec ++ " sec"
-    else hour ++ " h " ++ min ++ " min " ++ sec ++ " sec"
+    print hour ++ ":" ++ print min ++ ":" ++ print sec
 
 
 makeDate : Time -> String
