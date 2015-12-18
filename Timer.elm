@@ -1,187 +1,56 @@
 module Timer where
 
-import Timestamp exposing (..)
-import ViewHtml exposing (..)
+import Types exposing (..)
 
-import Time exposing (..)
 import Html exposing(..)
 import Html.Events exposing (..)
 import Html.Attributes exposing (..)
-import Graphics.Input exposing (dropDown)
+import Date exposing (fromTime, year, month, day)
+import Time exposing (..)
 
 
---MODEL
 
-type alias Model =
-  { time: Int,
-    counting: Bool,
-    button: String,
-    sessions: List Session,
-    currentCategory: String,
-    catList: List String
-  }
-
-
-type alias Session =
-  { date: String,
-    time: Int,
-    category: String
-  }
-
-
-initialModel : Model
-initialModel =
+timeRead : Int -> String
+timeRead time =
   let
-    emptyModel =
-      { time = 0,
-        counting = False,
-        button = "Start",
-        sessions = [ ],
-        currentCategory = "Reading",
-        catList = ["Reading", "Exercise", "Walking"]
-      }
+    hour = time // 3600 |> toString
+    min = time `rem` 3600 // 60 |> toString
+    sec = time `rem` 60 |> toString
+
   in
-    Maybe.withDefault emptyModel incoming
+    if time < 60  then sec ++ " sec"
+    else if time < 3600 then min ++ " min " ++ sec ++ " sec"
+    else hour ++ " h " ++ min ++ " min " ++ sec ++ " sec"
 
 
---UPDATE
-
-type Action = NoOp | Count | Reset | ChangeCategory String
-
-
-createSession : Time -> String -> Model -> Model
-createSession timeStop catString model =
+makeDate : Time -> String
+makeDate time =
   let
-    getSession =
-      { date = makeDate timeStop
-      , time = model.time
-      , category = model.currentCategory
-      }
+    yearT =
+      time
+        |> fromTime
+        |> year
+        |> toString
+    monthT =
+      time
+        |> fromTime
+        |> month
+        |> toString
+    dayT =
+      time
+        |> fromTime
+        |> day
+        |> toString
   in
-    { model | counting = False
-            , sessions = getSession :: model.sessions
-            , time = 0
-            , button = "Start"
-            , currentCategory = catString }
+    dayT ++ " " ++ monthT ++ " " ++ yearT
 
 
-
-update : (Time, Action) -> Model -> Model
-update (timeStop, action) model =
-  case action of
-    NoOp ->
-      if model.counting
-        then { model | time = model.time + 1 }
-        else { model | time = 0 }
-
-    Count ->
-      if model.button == "Start"
-        then { model | counting = True
-                     , button = "Stop" }
-        else createSession timeStop model.currentCategory model
-
-    Reset ->
-      { model | sessions = (filterSessionsRemove model) }
-
-    ChangeCategory catString ->
-      if model.button == "Start"
-        then { model | currentCategory = catString }
-        else createSession timeStop catString model
-
-
-
---VIEW
-
-filterSessions : Model -> List Session
-filterSessions model =
-  List.filter (\session -> session.category == model.currentCategory) model.sessions
-
-
-filterSessionsRemove : Model -> List Session
-filterSessionsRemove model =
-  List.filter (\session -> session.category /= model.currentCategory) model.sessions
-
-
-dd : Model -> Html
-dd model =
-  let
-    getCatList category =
-      (category, ChangeCategory category)
-  in
-    div []
-      [
-        dropDown (Signal.message inbox.address)
-                 (List.map getCatList model.catList)
-                 |> fromElement
-      ]
-
-view : Model -> Html
-view model =
-  div [] [
-    div [ class "timer" ]
-      [ div [ class "counter" ] [ text (timeRead model.time) ]
-      , button [ class "start-button", onClick inbox.address Count ] [ text model.button ]
-      ]
-  , div [ class "sessions" ]
-      [ h1 [] [ text "Sessions" ]
-      , dd model
-      , button [ class "reset-button", onClick inbox.address Reset ] [ text "Reset" ]
-      , div []
-        [ tr [ class "sessions-table"]
-          [ td [ class "cell" ]
-            [ text ((sessionTimes (filterSessions model)) ++ " times") ]
-          , td [ class "cell" ]
-            [ text ((totalTime (filterSessions model)) ++ " in total") ]
-          ]
-        ]
-      , div []
-        (filterSessions model
-          |> List.reverse
-          |> List.map showSession
-        )
-      ]
+timerView : Model -> Signal.Address Types.Action -> Action -> Html
+timerView model address action =
+  div [ class "timer" ]
+  [ div [ class "counter" ] [ text (timeRead model.time) ]
+  , button [ class "start-button", onClick address action ] [ text model.button ]
   ]
-
-
---SIGNALS
-
-inbox : Signal.Mailbox Action
-inbox =
-  Signal.mailbox NoOp
-
-
-actions : Signal Action
-actions =
-  inbox.signal
-
-
-combined =
-  Signal.mergeMany
-    [ (actions)
-    , (Signal.map (\_ -> NoOp) (every second))
-    ]
-
-
---PORTS
-
-port incoming : Maybe Model
-
-
-port outgoing : Signal Model
-port outgoing =
-  model
-
-
---WIRING
-
-model : Signal Model
-model =
-  Signal.foldp update initialModel (timestamp combined)
-
-
-main : Signal Html
-main =
-  Signal.map view model
 
 
 
