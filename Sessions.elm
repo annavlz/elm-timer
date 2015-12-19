@@ -54,14 +54,14 @@ createSession timeStop catString model =
 
 
 
-filterSessions : Model -> List Session
-filterSessions model =
-  List.filter (\session -> session.category == model.currentCategory) model.sessions
+filterSessions : Model -> String -> List Session
+filterSessions model cat =
+  List.filter (\session -> session.category == cat) model.sessions
 
 
-filterSessionsRemove : Model -> List Session
-filterSessionsRemove model =
-  List.filter (\session -> session.category /= model.currentCategory) model.sessions
+filterSessionsRemove : Model -> String -> List Session
+filterSessionsRemove model cat =
+  List.filter (\session -> session.category /= cat) model.sessions
 
 
 dDown : Model -> Signal.Address Types.Action -> (String -> Action) -> Html
@@ -85,13 +85,13 @@ sessionsView model address action1 action2 =
     , div []
       [ tr [ Styles.sessionsTable ]
         [ td [ Styles.cell  ]
-          [ text ((sessionTimes (filterSessions model)) ++ " times") ]
+          [ text ((sessionTimes (filterSessions model model.currentCategory)) ++ " times") ]
         , td [ Styles.cell  ]
-          [ text ((totalTime (filterSessions model)) ++ " in total") ]
+          [ text ((totalTime (filterSessions model model.currentCategory)) ++ " in total") ]
         ]
       ]
     , div []
-      (filterSessions model
+      (filterSessions model model.currentCategory
         |> List.reverse
         |> List.map showSession
       )

@@ -47,7 +47,7 @@ update (timeStop, action) model =
         else createSession timeStop model.currentCategory model
 
     Reset ->
-      { model | sessions = (filterSessionsRemove model) }
+      { model | sessions = (filterSessionsRemove model model.currentCategory) }
 
     ChangeCategory catString ->
       if model.button == "Start"

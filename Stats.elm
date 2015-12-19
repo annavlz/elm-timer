@@ -20,7 +20,8 @@ statsView model =
           [ text "Total" ]
         ]
       ]
-    --, div []
+    , div []
+        (List.map (showStat model) model.catList)
     --  [ tr [ Styles.sessionsTable ]
     --    [ td [ Styles.cell  ]
     --      [ text ((sessionTimes (filterSessions model)) ++ " times") ]
@@ -33,4 +34,15 @@ statsView model =
     --    |> List.reverse
     --    |> List.map showSession
     --  )
+    ]
+
+showStat : Model -> String -> Html
+showStat model cat =
+  tr [ ]
+    [ td [ Styles.cell ]
+      [ text cat ]
+    , td [ Styles.cell  ]
+      [ text (sessionTimes (filterSessions model cat)) ]
+    , td [ Styles.cell  ]
+      [ text (totalTime (filterSessions model cat)) ]
     ]
