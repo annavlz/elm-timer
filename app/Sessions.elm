@@ -11,6 +11,8 @@ import Graphics.Input exposing (dropDown)
 import Html.Events exposing (..)
 
 
+--HELPERS
+
 sessionTimes : List Session -> String
 sessionTimes sessionsList =
   List.length sessionsList |> toString
@@ -24,17 +26,6 @@ totalTime sessionsList =
   in
     List.foldr (+) 0 getSessionTime |> timeRead
 
-
-showSession : Session -> Html
-showSession session =
-  tr [ ]
-    [ td [ Styles.cell ]
-      [ text (toString session.date) ]
-    , td [ Styles.cell  ]
-      [ text (timeRead session.time) ]
-    , td [ Styles.cell  ]
-      [ text session.category ]
-    ]
 
 
 createSession : Time -> String -> Model -> Model
@@ -64,6 +55,20 @@ filterSessionsRemove model cat =
   List.filter (\session -> session.category /= cat) model.sessions
 
 
+--VIEW
+
+showSession : Session -> Html
+showSession session =
+  tr [ ]
+    [ td [ Styles.cell ]
+      [ text (toString session.date) ]
+    , td [ Styles.cell  ]
+      [ text (timeRead session.time) ]
+    , td [ Styles.cell  ]
+      [ text session.category ]
+    ]
+
+
 dDown : Model -> Signal.Address Types.Action -> (String -> Action) -> Html
 dDown model address action =
   let
@@ -76,6 +81,7 @@ dDown model address action =
                  (List.map getCatList model.catList)
                  |> fromElement
       ]
+
 
 sessionsView model address action1 action2 =
   div [ Styles.sessions ]

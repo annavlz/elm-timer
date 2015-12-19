@@ -10,9 +10,7 @@ import Time exposing (..)
 import Html exposing(..)
 
 
-
 --MODEL
-
 
 initialModel : Model
 initialModel =
@@ -30,7 +28,6 @@ initialModel =
 
 
 --UPDATE
-
 
 update : (Time, Action) -> Model -> Model
 update (timeStop, action) model =
@@ -55,7 +52,7 @@ update (timeStop, action) model =
         else createSession timeStop catString model
 
 
-
+--VIEW
 
 view : Model -> Html
 view model =
@@ -65,11 +62,9 @@ view model =
       , sessionsView model inbox.address ChangeCategory Reset
       ]
     , div [ Styles.float ] [
-      statsView model
+        statsView model
       ]
     ]
-
-
 
 
 --SIGNALS
@@ -94,7 +89,6 @@ combined =
 --PORTS
 
 port incoming : Maybe Model
-
 
 port outgoing : Signal Model
 port outgoing =

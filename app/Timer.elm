@@ -1,16 +1,16 @@
 module Timer where
 
 import Types exposing (..)
+import Styles
 
 import Html exposing(..)
 import Html.Events exposing (..)
 import Html.Attributes exposing (..)
 import Date exposing (fromTime, year, month, day)
 import Time exposing (..)
-import String
-import Styles
 
 
+--HELPERS
 
 timeRead : Int -> String
 timeRead time =
@@ -46,14 +46,12 @@ makeDate time =
     dayT ++ " " ++ monthT ++ " " ++ yearT
 
 
+--VIEW
+
 timerView : Model -> Signal.Address Types.Action -> Action -> Html
 timerView model address action =
   div [ Styles.timer ]
   [ div [ Styles.counter ] [ text (timeRead model.time) ]
   , button [ Styles.startButton, onClick address action ] [ text model.button ]
   ]
-
-
-
-
 

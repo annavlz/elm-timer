@@ -17,4 +17,5 @@ type alias Session =
     category: String
   }
 
+
 type Action = NoOp | Count | Reset | ChangeCategory String

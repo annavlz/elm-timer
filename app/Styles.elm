@@ -2,6 +2,7 @@ module Styles where
 
 import Html.Attributes exposing (..)
 
+
 timer =
   style
     [ ("width","300px")
@@ -13,6 +14,7 @@ timer =
     , ("font-family","Verdana, Geneva, sans-serif")
     , ("box-shadow","2px 2px 10px #c7ced6")
     ]
+
 
 counter =
   style
@@ -72,6 +74,7 @@ cell =
   , ("font-family","Verdana, Geneva, sans-serif")
   , ("padding","5px 10px")
   ]
+
 
 float =
   style
