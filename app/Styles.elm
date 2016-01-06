@@ -81,3 +81,28 @@ float =
   [ ("float","left")
   , ("width","50%")
   ]
+
+header =
+  style
+  [ ("background-color", "#2c4133")
+  , ("height", "20px")
+  , ("padding-bottom", "40px")
+  ]
+
+logo =
+  style
+  [ ("color","#ece0c9")
+  , ("font-family","Verdana, Geneva, sans-serif")
+  , ("font-size","30px")
+  , ("padding", "10px")
+  ]
+
+login =
+  style
+  [ ("float", "right")
+  , ("padding", "10px")
+  ]
+
+loginInput =
+  style
+  [ ("margin", "5px") ]

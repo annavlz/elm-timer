@@ -4,6 +4,7 @@ import Timer exposing (..)
 import Sessions exposing (..)
 import Types exposing (..)
 import Stats exposing (..)
+import Header exposing (..)
 import Styles
 
 import Time exposing (..)
@@ -57,7 +58,8 @@ update (timeStop, action) model =
 view : Model -> Html
 view model =
   div []
-    [ div [ Styles.float ] [
+    [ div [] [ showHeader ]
+    , div [ Styles.float ] [
         timerView model inbox.address Count
       , sessionsView model inbox.address ChangeCategory Reset
       ]
