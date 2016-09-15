@@ -4,10 +4,6 @@ port module Main exposing (..)
 
 import Html exposing (..)
 import Html.App as App
-
-
---import Maybe exposing (Maybe(Just, Nothing))
-
 import Task exposing (..)
 import Time exposing (..)
 
@@ -23,8 +19,6 @@ import Types exposing (..)
 
 main : Program (Maybe Model)
 main =
-    --App.program
-    --    { init = ( initialModel, Cmd.none )
     App.programWithFlags
         { init = init
         , update = update
@@ -52,7 +46,7 @@ init : Maybe Model -> ( Model, Cmd Msg )
 init model =
     case model of
         Just model ->
-            ( initialModel, Cmd.none )
+            ( model, Cmd.none )
 
         Nothing ->
             ( initialModel, Cmd.none )
