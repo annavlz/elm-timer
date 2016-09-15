@@ -72,6 +72,5 @@ timerView : Model -> Msg -> Html Msg
 timerView model msg =
     div [ Styles.timer ]
         [ div [ Styles.counter ] [ text (timeRead model.time) ]
-          --TODO: Here ...
         , button [ Styles.startButton, onClick msg ] [ text model.button ]
         ]
