@@ -13,8 +13,8 @@ import Time exposing (..)
 import Sessions exposing (..)
 import Stats exposing (..)
 import Styles exposing (..)
-import Types exposing (..)
 import Timer exposing (..)
+import Types exposing (..)
 
 
 main : Program (Maybe Model)
