@@ -1,112 +1,152 @@
-module Main where
+port module Main exposing (..)
 
-import Timer exposing (..)
-import Sessions exposing (..)
-import Types exposing (..)
-import Stats exposing (..)
-import Styles
+--LIBS
 
+import Html exposing (..)
+import Html.App as App exposing (map)
+import Task exposing (..)
 import Time exposing (..)
-import Html exposing(..)
+
+
+--FILES
+
+import Sessions exposing (..)
+import Stats exposing (..)
+import Styles exposing (..)
+import Timer exposing (..)
+import Types exposing (..)
+
+
+main : Program (Maybe Model)
+main =
+    App.programWithFlags
+        { init = init
+        , update = update
+        , subscriptions = subscriptions
+        , view = view
+        }
+
 
 
 --MODEL
 
+
 initialModel : Model
 initialModel =
-  let
-    emptyModel =
-      { time = 0,
-        counting = False,
-        button = "Start",
-        sessions = [ ],
-        currentCategory = "Reading",
-        catList = ["Reading", "Exercise", "Walking"]
-      }
-  in
-    Maybe.withDefault emptyModel incoming
+    { time = 0
+    , counting = False
+    , button = "Start"
+    , sessions = []
+    , currentCategory = "Reading"
+    , catList = [ "Reading", "Exercise", "Walking" ]
+    }
+
+
+init : Maybe Model -> ( Model, Cmd Msg )
+init model =
+    case model of
+        Just model ->
+            ( model, Cmd.none )
+
+        Nothing ->
+            ( initialModel, Cmd.none )
+
 
 
 --UPDATE
 
-update : (Time, Action) -> Model -> Model
-update (timeStop, action) model =
-  case action of
-    NoOp ->
-      if model.counting
-        then { model | time = model.time + 1 }
-        else { model | time = 0 }
 
-    Count ->
-      if model.button == "Start"
-        then { model | counting = True
-                     , button = "Stop" }
-        else createSession timeStop model.currentCategory model
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        GetTimeAndThen msg' ->
+            ( model
+            , Task.perform (\err -> Debug.crash err) (GotTime msg') Time.now
+            )
 
-    Reset ->
-      { model | sessions = (filterSessionsRemove model model.currentCategory) }
+        GotTime msg' time ->
+            let
+                ( newModel, cmd ) =
+                    updateModel msg' time model
+            in
+                ( newModel, Cmd.map GetTimeAndThen cmd )
 
-    ChangeCategory catString ->
-      if model.button == "Start"
-        then { model | currentCategory = catString }
-        else createSession timeStop catString model
+
+updateModel : ModelMsg -> Time -> Model -> ( Model, Cmd ModelMsg )
+updateModel msg time model =
+    case msg of
+        NoOp ->
+            if model.counting then
+                ( { model | time = model.time + 1 }, outgoing model )
+            else
+                ( { model | time = 0 }, outgoing model )
+
+        Count ->
+            if model.button == "Start" then
+                ( { model
+                    | counting = True
+                    , button = "Stop"
+                  }
+                , outgoing model
+                )
+            else
+                ( createSession
+                    time
+                    model.currentCategory
+                    model
+                , outgoing model
+                )
+
+        Reset ->
+            ( { model
+                | sessions =
+                    (filterSessionsRemove model model.currentCategory)
+              }
+            , outgoing model
+            )
+
+        ChangeCategory catString ->
+            if model.button == "Start" then
+                ( { model | currentCategory = catString }, outgoing model )
+            else
+                ( createSession time catString model, outgoing model )
+
 
 
 --VIEW
 
-view : Model -> Html
+
+view : Model -> Html Msg
 view model =
-  div []
-    [ div [ Styles.float ] [
-        timerView model inbox.address Count
-      , sessionsView model inbox.address ChangeCategory Reset
-      ]
-    , div [ Styles.float ] [
-        statsView model
-      ]
-    ]
+    App.map GetTimeAndThen (viewModel model)
 
 
---SIGNALS
+viewModel : Model -> Html ModelMsg
+viewModel model =
+    div []
+        [ div [ Styles.float ]
+            [ timerView model Count
+            , sessionsView model ChangeCategory Reset
+            ]
+        , div [ Styles.float ]
+            [ statsView model
+            ]
+        ]
 
-inbox : Signal.Mailbox Action
-inbox =
-  Signal.mailbox NoOp
-
-
-actions : Signal Action
-actions =
-  inbox.signal
-
-
-combined =
-  Signal.mergeMany
-    [ (actions)
-    , (Signal.map (\_ -> NoOp) (every second))
-    ]
 
 
 --PORTS
 
-port incoming : Maybe Model
 
-port outgoing : Signal Model
-port outgoing =
-  model
-
-
---WIRING
-
-model : Signal Model
-model =
-  Signal.foldp update initialModel (timestamp combined)
-
-
-main : Signal Html
-main =
-  Signal.map view model
+port outgoing : Model -> Cmd msg
 
 
 
+--SUBSCRIPTIONS
 
 
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.batch
+        [ Time.every Time.second (\_ -> (GetTimeAndThen NoOp))
+        ]

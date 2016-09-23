@@ -1,30 +1,22 @@
 <!DOCTYPE HTML>
 <html>
-
 <head>
   <meta charset="UTF-8">
   <title>Time Tracker</title>
   <script type="text/javascript" src="elm.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-
-    <div id="elm-timer"></div>
-
+  <script type="text/javascript">
+    var timerModel = localStorage.getItem('timer-sessions');
+    var model = timerModel ? JSON.parse(timerModel) : null;
+    
+    var timerDiv = document.getElementById('elm-timer');
+    var timer = Elm.Main.fullscreen(model);
+    
+    timer.ports.outgoing.subscribe(function(model) {
+      localStorage.setItem('timer-sessions', JSON.stringify(model));
+    })
+  </script>
 </body>
-
-<script type="text/javascript">
-  var timerModel = localStorage.getItem('timer-sessions')
-  var startingModel = timerModel ? JSON.parse(timerModel) : null
-
-  var timerDiv = document.getElementById('elm-timer')
-  var timer = Elm.embed(Elm.Main, timerDiv, {incoming: startingModel})
-
-  timer.ports.outgoing.subscribe(function(model) {
-    localStorage.setItem('timer-sessions', JSON.stringify(model))
-  })
-
-</script>
-
 </html>
