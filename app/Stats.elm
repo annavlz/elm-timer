@@ -15,7 +15,7 @@ import Types exposing (..)
 --VIEW
 
 
-showStat : Model -> String -> Html Msg
+showStat : Model -> String -> Html ModelMsg
 showStat model cat =
     tr []
         [ td [ Styles.cell ]
@@ -27,7 +27,7 @@ showStat model cat =
         ]
 
 
-statsView : Model -> Html Msg
+statsView : Model -> Html ModelMsg
 statsView model =
     div [ Styles.sessions ]
         [ h1 [] [ text "Stats" ]

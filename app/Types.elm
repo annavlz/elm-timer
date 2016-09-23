@@ -21,8 +21,12 @@ type alias Session =
 
 
 type Msg
+    = GetTimeAndThen ModelMsg
+    | GotTime ModelMsg Time
+
+
+type ModelMsg
     = NoOp
-    | GetTimeAndThen (Time -> Msg)
-    | Count Time
+    | Count
     | Reset
-    | ChangeCategory String Time
+    | ChangeCategory String

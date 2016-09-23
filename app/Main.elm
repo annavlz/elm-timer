@@ -3,7 +3,7 @@ port module Main exposing (..)
 --LIBS
 
 import Html exposing (..)
-import Html.App as App
+import Html.App as App exposing (map)
 import Task exposing (..)
 import Time exposing (..)
 
@@ -13,8 +13,8 @@ import Time exposing (..)
 import Sessions exposing (..)
 import Stats exposing (..)
 import Styles exposing (..)
-import Timer exposing (..)
 import Types exposing (..)
+import Timer exposing (..)
 
 
 main : Program (Maybe Model)
@@ -56,24 +56,24 @@ init model =
 --UPDATE
 
 
-getTimeAndThen : (Time -> Msg) -> Cmd Msg
-getTimeAndThen msg =
-    Task.perform (\err -> Debug.crash err) msg Time.now
-
-
-count : Msg
-count =
-    GetTimeAndThen
-        (\time -> Count time)
-
-
-changeCategory : String -> Msg
-changeCategory cat =
-    GetTimeAndThen (\time -> ChangeCategory cat time)
-
-
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
+    case msg of
+        GetTimeAndThen msg' ->
+            ( model
+            , Task.perform (\err -> Debug.crash err) (GotTime msg') Time.now
+            )
+
+        GotTime msg' time ->
+            let
+                ( newModel, cmd ) =
+                    updateModel msg' time model
+            in
+                ( newModel, Cmd.map GetTimeAndThen cmd )
+
+
+updateModel : ModelMsg -> Time -> Model -> ( Model, Cmd ModelMsg )
+updateModel msg time model =
     case msg of
         NoOp ->
             if model.counting then
@@ -81,10 +81,7 @@ update msg model =
             else
                 ( { model | time = 0 }, outgoing model )
 
-        GetTimeAndThen msg' ->
-            ( model, getTimeAndThen msg' )
-
-        Count timeStop ->
+        Count ->
             if model.button == "Start" then
                 ( { model
                     | counting = True
@@ -93,20 +90,26 @@ update msg model =
                 , outgoing model
                 )
             else
-                ( createSession timeStop model.currentCategory model, outgoing model )
+                ( createSession
+                    time
+                    model.currentCategory
+                    model
+                , outgoing model
+                )
 
         Reset ->
             ( { model
-                | sessions = (filterSessionsRemove model model.currentCategory)
+                | sessions =
+                    (filterSessionsRemove model model.currentCategory)
               }
             , outgoing model
             )
 
-        ChangeCategory catString timeStop ->
+        ChangeCategory catString ->
             if model.button == "Start" then
                 ( { model | currentCategory = catString }, outgoing model )
             else
-                ( createSession timeStop catString model, outgoing model )
+                ( createSession time catString model, outgoing model )
 
 
 
@@ -115,10 +118,15 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
+    App.map GetTimeAndThen (viewModel model)
+
+
+viewModel : Model -> Html ModelMsg
+viewModel model =
     div []
         [ div [ Styles.float ]
-            [ timerView model count
-            , sessionsView model changeCategory Reset
+            [ timerView model Count
+            , sessionsView model ChangeCategory Reset
             ]
         , div [ Styles.float ]
             [ statsView model
@@ -140,5 +148,5 @@ port outgoing : Model -> Cmd msg
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Time.every Time.second (\_ -> NoOp)
+        [ Time.every Time.second (\_ -> (GetTimeAndThen NoOp))
         ]

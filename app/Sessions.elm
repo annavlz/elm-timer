@@ -64,7 +64,7 @@ filterSessionsRemove model cat =
 --VIEW
 
 
-showSession : Session -> Html Msg
+showSession : Session -> Html ModelMsg
 showSession session =
     tr []
         [ td [ Styles.cell ]
@@ -81,7 +81,7 @@ onSelect tagger =
     on "change" (Json.map tagger targetValue)
 
 
-dDown : Model -> (String -> Msg) -> Html Msg
+dDown : Model -> (String -> ModelMsg) -> Html ModelMsg
 dDown model msg =
     let
         getCatList category =
@@ -94,7 +94,7 @@ dDown model msg =
             ]
 
 
-sessionsView : Model -> (String -> Msg) -> Msg -> Html Msg
+sessionsView : Model -> (String -> ModelMsg) -> ModelMsg -> Html ModelMsg
 sessionsView model msg1 msg2 =
     div [ Styles.sessions ]
         [ h1 [] [ text "Sessions" ]

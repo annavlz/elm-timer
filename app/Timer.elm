@@ -68,7 +68,7 @@ makeDate time =
 --VIEW
 
 
-timerView : Model -> Msg -> Html Msg
+timerView : Model -> ModelMsg -> Html ModelMsg
 timerView model msg =
     div [ Styles.timer ]
         [ div [ Styles.counter ] [ text (timeRead model.time) ]
